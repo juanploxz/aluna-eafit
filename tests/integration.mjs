@@ -43,7 +43,20 @@ try {
   const identity1 = first.headers.get('x-aluna-request-id');
   const identity2 = second.headers.get('x-aluna-request-id');
   check('Each response has a unique request identifier', identity1 && identity2 && identity1 !== identity2);
-  check('Visible homepage identity matches its response header', html.includes(first.headers.get('x-aluna-node')));
+  const hasDiagnostics = content => /\bserver-badge\b|\bid=["']server-ip["']/.test(content);
+  check('Ordinary homepage omits the technical server badge', !hasDiagnostics(html));
+  const diagnostic = await fetch(base + '/?aluna-diagnostico=1');
+  const diagnosticHtml = await diagnostic.text();
+  const visibleIdentity = diagnosticHtml.match(/<[^>]+\bid=["']server-ip["'][^>]*>([^<]+)<\//);
+  check('Explicit homepage diagnostics returns a visible server badge', diagnostic.status === 200 && hasDiagnostics(diagnosticHtml) && visibleIdentity);
+  check('Diagnostic homepage identity matches its response header', visibleIdentity?.[1] === diagnostic.headers.get('x-aluna-node'));
+  check('Diagnostic markup identifies the same HTTP request', diagnosticHtml.includes(`data-request-id="${diagnostic.headers.get('x-aluna-request-id')}"`));
+  check('Diagnostic homepage is not cacheable', /no-store/.test(diagnostic.headers.get('cache-control')));
+  for (const query of ['aluna-diagnostico=0', 'aluna-diagnostico=true', 'aluna-diagnostico%5B%5D=1']) {
+    const invalid = await fetch(base + '/?' + query);
+    const invalidHtml = await invalid.text();
+    check(`Invalid diagnostics switch stays hidden without PHP warnings: ${query}`, invalid.status === 200 && !hasDiagnostics(invalidHtml) && !/Fatal error|Warning:|Notice:|Stack trace:/.test(invalidHtml));
+  }
   const health = await fetch(base + '/?rest_route=/aluna/v1/health');
   check('Health endpoint checks database', health.status === 200 && (await health.json()).status === 'ok');
   const node = await fetch(base + '/?rest_route=/aluna/v1/node');
@@ -58,8 +71,13 @@ try {
   for (const product of catalog) {
     const detail = await fetch(product.link);
     const detailHtml = await detail.text();
-    check(`Product page renders: ${product.slug}`, detail.status === 200 && detailHtml.includes(product.title.rendered) && !/Fatal error|Warning:|Notice:/.test(detailHtml));
+    check(`Product page renders: ${product.slug}`, detail.status === 200 && detailHtml.includes(product.title.rendered) && !/Fatal error|Warning:|Notice:/.test(detailHtml) && !hasDiagnostics(detailHtml));
   }
+  const diagnosticProductUrl = new URL(catalog[0].link);
+  diagnosticProductUrl.searchParams.set('aluna-diagnostico', '1');
+  const diagnosticProduct = await fetch(diagnosticProductUrl);
+  const diagnosticProductHtml = await diagnosticProduct.text();
+  check('Product pages omit server diagnostics even with the explicit switch', diagnosticProduct.status === 200 && !hasDiagnostics(diagnosticProductHtml) && !/Fatal error|Warning:|Notice:|Stack trace:/.test(diagnosticProductHtml));
   const missing = await fetch(base + '/not-a-real-aluna-page-404');
   check('Unknown paths return HTTP 404', missing.status === 404);
   const urls = [...new Set([...html.matchAll(/(?:src|href)=(["'])(.*?)\1/g)].map(m => m[2]).filter(u => u.includes('/themes/aluna/') && !u.includes('#')))];

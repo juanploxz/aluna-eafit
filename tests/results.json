@@ -1,11 +1,11 @@
 {
-  "testedAt": "2026-11-17T19:34:01.960Z",
+  "testedAt": "2026-11-18T01:47:20.885Z",
   "runtime": {
     "wordpress": "7.1.4",
     "php": "8.3",
     "database": "SQLite (local verification only)"
   },
-  "passed": 55,
+  "passed": 63,
   "checks": [
     "All PHP files parse without syntax errors",
     "Unit assertions: 39 assertions passed.",
@@ -38,7 +38,14 @@
     "Homepage includes ALUNA",
     "Homepage is not cacheable",
     "Each response has a unique request identifier",
-    "Visible homepage identity matches its response header",
+    "Ordinary homepage omits the technical server badge",
+    "Explicit homepage diagnostics returns a visible server badge",
+    "Diagnostic homepage identity matches its response header",
+    "Diagnostic markup identifies the same HTTP request",
+    "Diagnostic homepage is not cacheable",
+    "Invalid diagnostics switch stays hidden without PHP warnings: aluna-diagnostico=0",
+    "Invalid diagnostics switch stays hidden without PHP warnings: aluna-diagnostico=true",
+    "Invalid diagnostics switch stays hidden without PHP warnings: aluna-diagnostico%5B%5D=1",
     "Health endpoint checks database",
     "Node endpoint provides identity without hostname",
     "Node endpoint is not cacheable",
@@ -52,6 +59,7 @@
     "Product page renders: crema-calma",
     "Product page renders: serum-luz",
     "Product page renders: limpiador-esencial",
+    "Product pages omit server diagnostics even with the explicit switch",
     "Unknown paths return HTTP 404",
     "Asset responds: /wp-content/themes/aluna/assets/css/app.css",
     "Asset responds: /wp-content/themes/aluna/assets/images/hero.webp",

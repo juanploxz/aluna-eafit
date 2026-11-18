@@ -30,7 +30,7 @@ node tests/integration.mjs
 node --test tests/frontend.test.cjs
 ```
 
-El runner usa una copia de WordPress con una base de prueba y el puerto 8091. Verifica registro de productos, importación repetible, borradores ocultos, saneamiento persistido, protección de edición, API anónima, respuesta de salud, identidad por petición, caché, portada, 404 y carga de recursos. Guarda la última ejecución satisfactoria en `tests/results.json`.
+El runner usa una copia de WordPress con una base de prueba y el puerto 8091. Verifica registro de productos, importación repetible, borradores ocultos, saneamiento persistido, protección de edición, API anónima, respuesta de salud, identidad por petición, caché, portada, 404 y carga de recursos. También comprueba que el indicador del servidor está ausente en la vista normal, aparece solo en la portada con `?aluna-diagnostico=1` y no se activa con valores inválidos ni en fichas de producto. Guarda la última ejecución satisfactoria en `tests/results.json`.
 
 Para una comprobación adicional con PHP nativo:
 
@@ -49,6 +49,8 @@ Los tests de integración del plugin crean y eliminan un producto temporal; ejec
 4. Completar la guía de rutina, cambiar elecciones y reiniciarla.
 5. Consultar las tres sedes y la información de la empresa.
 6. Editar un producto en WordPress y comprobar que la modificación aparece en el catálogo.
-7. En AWS, refrescar la portada a través de cada balanceador y comprobar la IP privada y el identificador de cada respuesta.
+7. Comprobar que la portada normal no muestra el indicador técnico. Para B1/B2 en AWS, abrir `/?aluna-diagnostico=1` a través de cada balanceador, refrescar y registrar la IP privada visible; el identificador de cada respuesta está en `X-Aluna-Request-ID` y en el atributo `data-request-id` del indicador.
+
+La IP visible exigida por el enunciado se presenta únicamente en esa vista de diagnóstico de la portada. La vista habitual se mantiene limpia por solicitud del usuario y no satisface por sí sola el requisito visual de la demostración; conservar el parámetro en las evidencias del curso.
 
 El informe de resultados registra comprobaciones concretas; no es una garantía de ausencia absoluta de errores ni una prueba de capacidad o alta disponibilidad en AWS.

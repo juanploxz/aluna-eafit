@@ -13,6 +13,13 @@ add_action('after_setup_theme', function () {
 
 function aluna_asset(string $path): string { return get_template_directory_uri() . '/assets/' . ltrim($path, '/'); }
 function aluna_price(int $value): string { return '$' . number_format($value, 0, ',', '.'); }
+/** Explicit homepage-only diagnostic view for the course's load-balancing evidence. */
+function aluna_diagnostics_enabled(): bool {
+    return is_front_page()
+        && isset($_GET['aluna-diagnostico'])
+        && is_string($_GET['aluna-diagnostico'])
+        && wp_unslash($_GET['aluna-diagnostico']) === '1';
+}
 function aluna_copy(string $key): string {
     $defaults = [
         'hero_eyebrow' => 'BIENESTAR EN LO COTIDIANO',
@@ -35,9 +42,9 @@ add_action('customize_register', function ($customizer) {
 });
 
 add_action('wp_enqueue_scripts', function () {
-    wp_enqueue_style('aluna', aluna_asset('css/app.css'), [], '1.0.0');
-    wp_enqueue_script('aluna-logic', aluna_asset('js/logic.js'), [], '1.0.0', ['strategy'=>'defer','in_footer'=>true]);
-    wp_enqueue_script('aluna', aluna_asset('js/app.js'), ['aluna-logic'], '1.0.0', ['strategy'=>'defer','in_footer'=>true]);
+    wp_enqueue_style('aluna', aluna_asset('css/app.css'), [], '1.0.1');
+    wp_enqueue_script('aluna-logic', aluna_asset('js/logic.js'), [], '1.0.1', ['strategy'=>'defer','in_footer'=>true]);
+    wp_enqueue_script('aluna', aluna_asset('js/app.js'), ['aluna-logic'], '1.0.1', ['strategy'=>'defer','in_footer'=>true]);
 });
 
 function aluna_icon(string $name, string $class = ''): void {

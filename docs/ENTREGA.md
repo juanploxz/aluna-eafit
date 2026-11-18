@@ -23,7 +23,7 @@ Entorno de referencia verificado: WordPress 7.1.4 y PHP 8.3.36. Para el desplieg
 4. En **Productos ALUNA → Preparar catálogo**, pulsar **Cargar catálogo de muestra**. La operación no reemplaza productos existentes ni borra ediciones.
 5. En **Ajustes → Generales**, seleccionar español de Colombia y la zona horaria Bogotá. En **Lectura**, conservar la portada con las últimas entradas: el tema proporciona `front-page.php`.
 6. Guardar **Ajustes → Enlaces permanentes**. Habilitar las reglas de reescritura habituales de WordPress en ambos servidores.
-7. Verificar portada, fichas, `/wp-json/aluna/v1/health` y `/wp-json/aluna/v1/node` a través de cada balanceador.
+7. Verificar portada, fichas, `/?aluna-diagnostico=1`, `/wp-json/aluna/v1/health` y `/wp-json/aluna/v1/node` a través de cada balanceador.
 
 Alternativa con WP-CLI, ejecutada desde la instalación de WordPress:
 
@@ -42,7 +42,11 @@ No se incluye un usuario de producción ni una contraseña de despliegue. Crearl
 
 ## Identidad real de cada servidor
 
-La portada muestra la IPv4 privada calculada en PHP. El identificador de la petición está en el atributo `data-request-id` del elemento `#server-ip` y en la cabecera `X-Aluna-Request-ID`; la hora se consulta en `/wp-json/aluna/v1/node`. La identidad se calcula una vez por petición. La respuesta envía también `X-Aluna-Node`; no hay un contador de alternancia en JavaScript ni direcciones inventadas.
+La portada habitual no muestra información del servidor. Para la demostración técnica, abrir **`/?aluna-diagnostico=1`**: únicamente en esa vista de la portada se muestra la IPv4 privada calculada en PHP. El valor debe ser exactamente la cadena `1`; `0`, `true` y parámetros de tipo arreglo no activan el diagnóstico. Las fichas de producto no muestran el indicador, incluso con el parámetro.
+
+En la vista de diagnóstico, el identificador de la petición está en el atributo `data-request-id` del elemento `#server-ip`. Las cabeceras `X-Aluna-Node` y `X-Aluna-Request-ID` siguen presentes en las respuestas de la portada normal y de diagnóstico; la hora se consulta en `/wp-json/aluna/v1/node`. La identidad se calcula una vez por petición. No hay un contador de alternancia en JavaScript ni direcciones inventadas.
+
+**Alcance frente al enunciado:** el PDF solicita una IP privada visible y dinámica en la página principal. Por solicitud del usuario, la portada ordinaria ya no la muestra. Para B1 y B2 se debe demostrar la página principal con `?aluna-diagnostico=1` y conservar ese parámetro en las evidencias. No se afirma que la vista ordinaria sin parámetro satisfaga por sí sola ese requisito visual.
 
 La resolución acepta únicamente RFC1918 y consulta, en orden: constante `ALUNA_NODE_IP`, variable de entorno del mismo nombre, `SERVER_ADDR` y resolución del hostname local. Si el entorno no permite determinar una IPv4 privada, la interfaz lo indica. En cada instancia puede fijarse su IP real en el `wp-config.php` local:
 
@@ -61,9 +65,9 @@ La portada y los endpoints de diagnóstico envían `Cache-Control: no-store, no-
 Los balanceadores y cualquier plugin o proxy de caché deben respetar esas cabeceras y excluir la portada y `/wp-json/aluna/v1/` de su caché. Una caché de página que responde antes de ejecutar WordPress no puede ser controlada por el tema. No habilitar afinidad de sesión para las pruebas de distribución.
 
 ```sh
-# En cada balanceador o URL pública, observar IP y request-id en solicitudes nuevas.
-curl -sS -D - 'http://DOMINIO/?verificacion=1' -o /dev/null
-curl -sS -D - 'http://DOMINIO/?verificacion=2' -o /dev/null
+# En B1/B2, abrir también estas URLs en el navegador para registrar la IP visible.
+curl -sS -D - 'http://DOMINIO/?aluna-diagnostico=1&verificacion=1'
+curl -sS -D - 'http://DOMINIO/?aluna-diagnostico=1&verificacion=2'
 curl -sS 'http://DOMINIO/wp-json/aluna/v1/node'
 curl -sS 'http://DOMINIO/wp-json/aluna/v1/health'
 ```

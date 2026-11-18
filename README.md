@@ -2,7 +2,9 @@
 
 Aplicación web de cuidado personal para XYZ S.A. · Proyecto SI3002, EAFIT.
 
-**WordPress administra el contenido.** El tema original y el plugin incluidos entregan catálogo, fichas de producto, búsqueda y filtros, favoritos locales, guía de rutina e información de la empresa y sus tres sedes. La portada muestra la IPv4 privada real de la instancia que respondió.
+**WordPress administra el contenido.** El tema original y el plugin incluidos entregan catálogo, fichas de producto, búsqueda y filtros, favoritos locales, guía de rutina e información de la empresa y sus tres sedes. La vista habitual mantiene el contenido técnico fuera de la interfaz.
+
+Para demostrar el balanceo del curso, abre la portada con `/?aluna-diagnostico=1`: esa vista muestra la IPv4 privada real de la instancia que respondió. La portada normal ya no muestra la IP por decisión de experiencia de usuario; las evidencias B1/B2 deben capturarse con ese parámetro. Consulta [la guía de entrega](docs/ENTREGA.md) para el alcance de este ajuste frente al enunciado.
 
 ## Probar en tu equipo
 

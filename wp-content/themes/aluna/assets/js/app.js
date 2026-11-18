@@ -125,7 +125,7 @@
         ? saved
           ? "Producto eliminado de tus favoritos."
           : "Producto guardado en tus favoritos."
-        : "Guardado solo durante esta visita; el navegador bloqueó el almacenamiento.",
+        : "Tus favoritos estarán disponibles solo durante esta visita.",
     );
   }
   const focusOrigins = new WeakMap();
@@ -164,7 +164,7 @@
     const p = findProduct(id);
     if (!p) return;
     $("#product-detail").innerHTML =
-      `<div class="detail-layout"><div class="detail-image"><img src="${escape(p.imageUrl)}" alt="${escape(p.name)}" width="700" height="700"></div><div class="detail-copy"><p class="eyebrow">${escape(p.categoryLabel)}</p><h2 id="detail-name">${escape(p.name)}</h2><p class="detail-size">${escape(p.size)}</p><p class="detail-description">${escape(p.description)}</p><p class="detail-price">${money(p.price)}<span>COP · Precio de referencia</span></p><button type="button" class="button primary" data-favorite="${escape(p.id)}" aria-pressed="false">${heart}<span data-favorite-label>Guardar en favoritos</span></button><div class="detail-accordions"><details open><summary>Cómo usarlo${plus}</summary><p>${escape(p.usage)}</p></details><details><summary>Ingredientes destacados${plus}</summary><p>${escape(p.ingredients)}</p></details><details><summary>¿Para qué tipo de piel?${plus}</summary><p>${escape(p.skin.map((s) => ({ todas: "Todos los tipos", seca: "Seca", mixta: "Mixta", grasa: "Grasa", sensible: "Sensible" })[s] || s).join(" · "))}</p></details></div><p class="local-note">Producto conceptual. Información ilustrativa; no corresponde a una fórmula comercial validada.</p><a class="text-button" href="${escape(p.url)}">Abrir ficha completa ${arrow}</a></div></div>`;
+      `<div class="detail-layout"><div class="detail-image"><img src="${escape(p.imageUrl)}" alt="${escape(p.name)}" width="700" height="700"></div><div class="detail-copy"><p class="eyebrow">${escape(p.categoryLabel)}</p><h2 id="detail-name">${escape(p.name)}</h2><p class="detail-size">${escape(p.size)}</p><p class="detail-description">${escape(p.description)}</p><p class="detail-price">${money(p.price)}<span>COP</span></p><button type="button" class="button primary" data-favorite="${escape(p.id)}" aria-pressed="false">${heart}<span data-favorite-label>Guardar en favoritos</span></button><div class="detail-accordions"><details open><summary>Cómo usarlo${plus}</summary><p>${escape(p.usage)}</p></details><details><summary>Ingredientes destacados${plus}</summary><p>${escape(p.ingredients)}</p></details><details><summary>¿Para qué tipo de piel?${plus}</summary><p>${escape(p.skin.map((s) => ({ todas: "Todos los tipos", seca: "Seca", mixta: "Mixta", grasa: "Grasa", sensible: "Sensible" })[s] || s).join(" · "))}</p></details></div><a class="text-button" href="${escape(p.url)}">Abrir ficha completa ${arrow}</a></div></div>`;
     updateFavoriteButtons();
     openDialog($("#product-dialog"), origin);
   }
@@ -294,7 +294,7 @@
       proteccion: "04 · Protege",
     };
     $("#quiz-content").innerHTML =
-      `<p class="eyebrow">HECHO A TU MEDIDA</p><h2 id="quiz-title" tabindex="-1">Un buen comienzo.</h2><p class="quiz-intro">${selectionNote}</p><div class="quiz-result">${selected.map((p) => `<a class="routine-item" href="${escape(p.url)}" data-product-open="${escape(p.id)}"><img src="${escape(p.imageUrl)}" alt="" width="54" height="64"><div><span>${steps[p.category] || ""}</span><h3>${escape(p.name)}</h3></div>${arrow}</a>`).join("")}</div><div class="quiz-result-actions">${selected.length ? '<button class="button primary" type="button" data-save-routine>Guardar mi selección</button>' : ""}<button class="button secondary" type="button" data-quiz-restart>Volver a empezar</button></div><p class="local-note">Guía orientativa con productos de demostración. No sustituye una consulta profesional. Tus respuestas no se envían ni se guardan en un servidor.</p>`;
+      `<p class="eyebrow">HECHO A TU MEDIDA</p><h2 id="quiz-title" tabindex="-1">Un buen comienzo.</h2><p class="quiz-intro">${selectionNote}</p><div class="quiz-result">${selected.map((p) => `<a class="routine-item" href="${escape(p.url)}" data-product-open="${escape(p.id)}"><img src="${escape(p.imageUrl)}" alt="" width="54" height="64"><div><span>${steps[p.category] || ""}</span><h3>${escape(p.name)}</h3></div>${arrow}</a>`).join("")}</div><div class="quiz-result-actions">${selected.length ? '<button class="button primary" type="button" data-save-routine>Guardar mi selección</button>' : ""}<button class="button secondary" type="button" data-quiz-restart>Volver a empezar</button></div><p class="local-note">Selección orientativa. No sustituye una consulta profesional.</p>`;
     $("#quiz-title").focus();
   }
   document.addEventListener("click", (event) => {
@@ -327,7 +327,7 @@
     if (button.matches("[data-clear-favorites]")) {
       favorites = [];
       saveFavorites();
-      notify("Tus favoritos se han borrado de este navegador.");
+      notify("Tus favoritos se han borrado.");
       return;
     }
     if (button.matches("[data-browse]")) {

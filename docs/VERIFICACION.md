@@ -1,25 +1,27 @@
 # Verificación de ALUNA
 
-Fecha: 17 de noviembre de 2026. La ejecución de integración terminó a las 14:34, hora de Bogotá. Evidencia reproducible: `tests/results.json` y los runners incluidos.
+Fecha: 17 de noviembre de 2026. La ejecución de integración del tema actualizado terminó a las 20:47, hora de Bogotá. Evidencia reproducible: `tests/results.json` y los runners incluidos.
 
 | Verificación ejecutada | Resultado |
 | --- | --- |
 | Parseo PHP con `TOKEN_PARSE` | 15 archivos sin errores de sintaxis. |
 | Reglas PHP de identidad y sanitización | 39 aserciones aprobadas. |
 | Integración con WordPress real | 21 comprobaciones aprobadas. |
-| Runner completo PHP + HTTP + recursos | 55 comprobaciones aprobadas; incluye los grupos anteriores. |
+| Runner completo PHP + HTTP + recursos | 63 comprobaciones aprobadas; incluye los grupos anteriores. |
 | Lógica de filtros, búsqueda, rutina y favoritos | 46 pruebas Node aprobadas. |
-| Sintaxis de `app.js` y `logic.js` | `node --check` sin errores. |
+| Sintaxis de `app.js`, `logic.js` e `integration.mjs` | `node --check` sin errores. |
 
-El runner de 55 comprobaciones cuenta el grupo de 39 aserciones unitarias como una comprobación; los valores de la tabla no deben sumarse como si fueran pruebas independientes.
+El runner de 63 comprobaciones cuenta el grupo de 39 aserciones unitarias como una comprobación; los valores de la tabla no deben sumarse como si fueran pruebas independientes.
 
 ## Entorno utilizado
 
-WordPress 7.1.4 oficial, PHP 8.3.36 mediante WordPress Playground 3.1.65, Node 24.22.3 y SQLite para la verificación local. Los archivos de tema y plugin probados son los de esta entrega. No se instaló un CMS alternativo ni se sustituyó WordPress con una maqueta HTML.
+WordPress 7.1.4 oficial, PHP 8.3.36 mediante WordPress Playground 3.1.65, Node 24.22.3 y SQLite para la verificación local. La ejecución indicada incluye el cambio de visibilidad del diagnóstico. No se instaló un CMS alternativo ni se sustituyó WordPress con una maqueta HTML.
 
 Se ejecutaron operaciones reales sobre una base de datos de prueba: carga repetida del catálogo, creación de borrador, publicación, cambios de metadatos y eliminación del producto temporal. Se comprobó que un nonce inválido impide modificar una ficha, un editor autorizado puede guardar cambios y un visitante anónimo no puede escribir mediante REST. También se probaron valores malformados, precios negativos, rutas de imagen no permitidas y filtros de IPv4 privada.
 
-Por HTTP se verificaron la portada, las ocho fichas de producto, el catálogo REST, la página 404 y los recursos CSS, JavaScript y WebP. La portada devolvió HTTP 200 con idioma `es-CO`, sin advertencias PHP expuestas, con `no-store` y un identificador distinto en solicitudes sucesivas. La IP visible coincidió con la cabecera de la misma respuesta. Los endpoints de nodo y salud devolvieron respuestas válidas; salud comprobó la base de datos.
+Por HTTP se verificaron la portada, las ocho fichas de producto, el catálogo REST, la página 404 y los recursos CSS, JavaScript, SVG y WebP. La portada devolvió HTTP 200 con idioma `es-CO`, sin advertencias PHP expuestas, con `no-store` y un identificador distinto en solicitudes sucesivas. Los endpoints de nodo y salud devolvieron respuestas válidas; salud comprobó la base de datos.
+
+La portada habitual no incluyó el indicador técnico ni el elemento `#server-ip`. La vista `/?aluna-diagnostico=1` mostró una IP coincidente con la cabecera de su respuesta y el mismo identificador en `data-request-id`, manteniendo `no-store`. Los valores `0`, `true` y de tipo arreglo no activaron el indicador ni produjeron advertencias PHP. Las ocho fichas se sirvieron sin indicador; también se comprobó su ausencia en una ficha solicitada con el parámetro de diagnóstico.
 
 Las pruebas frontend cubren lógica pura: búsqueda sin sensibilidad a tildes, combinaciones de filtros, ordenamiento, selección de una rutina compatible, favoritos corruptos o antiguos y resultados vacíos. No ejercitan eventos DOM, el foco ni la representación visual del navegador.
 
@@ -27,7 +29,7 @@ Las pruebas frontend cubren lógica pura: búsqueda sin sensibilidad a tildes, c
 
 - **Revisión visual y navegación en navegador:** no ejecutadas. El acceso de automatización al origen local fue rechazado; se respetó esa restricción y no se utilizó una vía alternativa. Revisar la lista de comprobaciones de `EDICION-Y-PRUEBAS.md` en escritorio y móvil antes de la presentación.
 - **MariaDB, Apache/NGINX y Ubuntu reales:** no disponibles en esta sesión. El código usa las APIs nativas de WordPress y consultas compatibles, pero la ejecución SQLite no certifica la configuración de producción.
-- **Dos nodos y balanceadores:** no desplegados. La dirección que el runtime local proporciona no constituye evidencia de alternancia entre instancias EC2. Ejecutar B1 y B2 con las IP privadas reales.
+- **Dos nodos y balanceadores:** no desplegados. La dirección que el runtime local proporciona no constituye evidencia de alternancia entre instancias EC2. Ejecutar B1 y B2 con las IP privadas reales en `/?aluna-diagnostico=1`. La portada ordinaria ya no muestra la IP por solicitud del usuario; no se afirma que esa vista sin parámetro cumpla por sí sola el requisito visual del enunciado.
 - **DNS, NAT, carga concurrente y recuperación de fallas:** corresponden a la infraestructura del compañero. No se afirman resultados de esas pruebas.
 - **Rendimiento visual, accesibilidad auditada y métricas de Lighthouse:** no medidos. La implementación incluye HTML semántico, foco visible, diálogos nativos, movimiento reducido y diseño adaptable; la revisión de esos comportamientos en un navegador permanece pendiente.
 
