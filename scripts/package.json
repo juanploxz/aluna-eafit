@@ -1,0 +1,8 @@
+{
+  "name": "aluna-local-verification",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24.18.0" },
+  "scripts": { "preview": "node preview.mjs", "test": "node ../tests/integration.mjs" },
+  "dependencies": { "@wp-playground/cli": "3.1.65", "@zip.js/zip.js": "2.7.57" }
+}
